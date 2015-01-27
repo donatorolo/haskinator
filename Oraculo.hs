@@ -2,11 +2,21 @@
 -- Autor:  Carlos Aponte 09-10041
 --         Donato Rolo   10-10640
 
-module Oraculo (Oraculo(Prediccion,Pregunta), crearPrediccion, crearPregunta, 
-    prediccion, pregunta, positivo, negativo, obtenerCadena) where
+module Oraculo 
+    ( Oraculo(..)
+    , crearPrediccion
+    , crearPregunta
+    , prediccion
+    , pregunta
+    , positivo
+    , negativo
+    , obtenerCadena
+    ) where
+
 --------------------------------------------------------------------------------
 --                                LIBRERÍAS                                   --
 --------------------------------------------------------------------------------
+
 
 import Data.Maybe
 
@@ -44,7 +54,7 @@ hoja4 = Prediccion "OBAMA"
 --         Un oráculo que corresponda a una respuesta negativa para la pregunta.
 
 data Oraculo a = Prediccion String | Pregunta String (Oraculo a) (Oraculo a)
-    deriving(Eq, Show, Ord)
+    deriving(Eq, Ord)
 
 --------------------------------------------------------------------------------
 --                       FUNCIONES DE CONSTRUCCIÓN                            --
@@ -118,31 +128,12 @@ negativo _                = error
 --                la 'Prediccion' suministrada y el valor de verdad (decisión 
 --                positiva o negativa) de la misma.
 
---obtenerCadena ::  Oraculo a -> String -> Maybe [(String,Bool)]
---obtenerCadena a b = help [(a,[])] b
---        where
---            help :: [(Oraculo a,[(String,Bool)])] -> String -> Maybe [(String,Bool)]
---            help ((Prediccion a,c):xs) b
---                | a == b    = Just c
---                | otherwise = help xs b
---            help ((Pregunta a yes no,c):xs) b = help (xs ++ [(yes,c++[(a,True)]),(no,c++[(a,False)])]) b
---            help [] b = Nothing
-
-
-
-            --help (Prediccion a) b c
-            --    | a == b    = Just c
-            --    | otherwise = Nothing
-            --help (Pregunta a yes no) b c
-            --    | help yes b (c++[(a,True)]) /= Nothing = help yes b (c++[(a,True)])
-            --    | help no b (c++[(a,False)]) /= Nothing = help no b (c++[(a,False)])
-            --    | otherwise = Nothing
-
 obtenerCadena :: Oraculo a -> String -> Maybe [(String, Bool)]
 obtenerCadena (Prediccion a) b 
     | a == b    = Just []
     | otherwise = Nothing
-obtenerCadena (Pregunta a yes no) b = attach inYes $ if inYes then goYes else goNo
+obtenerCadena (Pregunta a yes no) b = attach inYes $ if inYes then goYes 
+                                                              else goNo
     where
         inYes  = goYes /= Nothing
         goYes  = obtenerCadena yes b
@@ -173,18 +164,65 @@ obtenerEstadisticas a b = (minimum l, maximum l,average l)
         average l = (sum $ map fromIntegral l) / (fromIntegral $ length l)
 
 --------------------------------------------------------------------------------
+--                               INSTANCIAS                                   --
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
+
+-- 
+
+instance Show (Oraculo a) where
+    show a = help a 0
+        where
+            help (Prediccion a) n      = replicate (n*2) ' ' ++ "Prediccion " ++ 
+                                         a ++ "\n"
+            help (Pregunta a yes no) n = replicate (n*2) ' ' ++ "Pregunta " ++
+                                         a ++ "\n" ++ help yes (n+1) ++ 
+                                         help no (n+1)
+
+--instance Read (Oraculo a) where
+--    read a = help 0 $ map auxiliar3 $ lines a 
+--        where
+--            help :: Int-> [(Int,String)] -> Oraculo a
+--            help _ ((_ ,"Prediccion" : pred) : xs) = crearPrediccion $ unwords pred
+--            help num1 ((num2,"Pregunta" : preg) : xs) = questionCreation
+--                where
+--                    quest = unwords preg
+--                    goYes = help xs
+--                    goNo  = help 
+--                    questionCreation = crearPregunta quest 
+
+-- Este auxiliar quita los primeros espacios que tenga un string
+auxiliar :: String -> String 
+auxiliar (x:xs)
+    | x == ' '  = auxiliar xs
+    | otherwise = x:xs
+
+-- Este auxiliar cuenta cuantos espacios en blanco tiene un string al principio
+auxiliar2 :: String -> Int
+auxiliar2 (x:xs)
+    | x == ' '  = 1 + auxiliar2 xs
+    | otherwise = 0
+
+-- te devuelve la tupla que te comente
+auxiliar3 :: String -> (Int, String)
+auxiliar3 x = (auxiliar2 x, auxiliar x)
+
+-- esta funcion es para determinar si una tupla es mayor o menor que otra
+mycompare :: Ord a => (a,b) -> (a,b) -> Ordering
+mycompare (a,_) (b,_)
+    | a <= b = LT
+    | a > b = GT
+
+-- para insertar ordenado en una lista
+myinsert :: Ord a => a -> [a] -> (a -> a -> Ordering) -> [a]
+myinsert e [] _ = [e]
+myinsert e (x:xs)
+    | (mycompare e x) == LT = e:x:xs
+    | otherwise             = x:(myinsert e xs mycompare)
+
+-- Falta hacer una funcion que vacie la lista que tienes...y la meta en una nueva
+-- usando el insert que esta arriba.....y asi quedaria ordenada
+
 --------------------------------------------------------------------------------
 
 
+--------------------------------------------------------------------------------
