@@ -1,0 +1,70 @@
+--------------------------------------------------------------------------------
+--                            ORACULOS PRUEBA1                                --
+--------------------------------------------------------------------------------
+
+
+
+-- Oraculo de numeros, arbol del 1 al 15
+h15 = crearPrediccion "15"
+h14 = crearPrediccion "10"
+h13 = crearPrediccion "13"
+h12 = crearPrediccion "10"
+h10 = crearPrediccion "10"
+h9 = crearPrediccion "9"
+h8 = crearPrediccion "10"
+h5 = crearPrediccion "5"
+
+h11 = crearPregunta "11" h14 h15
+h7 = crearPregunta "7" h12 h13
+h6 = crearPregunta "6" h10 h11
+h4 = crearPregunta "4" h8 h9
+h3 = crearPregunta "3" h6 h7
+h2 = crearPregunta "2" h4 h5
+h1 = crearPregunta "1" h2 h3
+
+
+pregunta1 = Pregunta "Esireal" pregunta2 pregunta3
+
+
+pregunta2 = Pregunta "Esmasculino" hoja1 hoja2
+
+
+pregunta3 = Pregunta "EsunHDP" hoja3 pregunta4
+
+pregunta4 = Pregunta "EsunaRata" hoja1 hoja4
+
+hoja1 = Prediccion "MICKEY"
+hoja2 = Prediccion "MINNIE"
+hoja3 = Prediccion "CHAVEZ"
+hoja4 = Prediccion "OBAMA"
+
+--------------------------------------------------------------------------------
+--                            ORACULOS PRUEBA1                                --
+--------------------------------------------------------------------------------
+
+pregunta1 = Pregunta "Es Ireal" pregunta2 pregunta3
+pregunta2 = Pregunta "Es Masculino" hoja1 hoja2
+pregunta3 = Pregunta "Es Buena Gente" hoja3 hoja4
+ 
+hoja1 = Prediccion "MICKEY"
+hoja2 = Prediccion "MINNIE"
+hoja3 = Prediccion "CHAVEZ"
+hoja4 = Prediccion "OBAMA"
+
+-- Oraculo de numeros, arbol del 1 al 15
+h15 = crearPrediccion "15"
+h14 = crearPrediccion "10"
+h13 = crearPrediccion "11"
+h12 = crearPrediccion "10"
+h10 = crearPrediccion "10"
+h9 = crearPrediccion "9"
+h8 = crearPrediccion "8"
+h5 = crearPrediccion "5"
+
+h11 = crearPregunta "11" h14 h15
+h7 = crearPregunta "7" h12 h13
+h6 = crearPregunta "6" h10 h11
+h4 = crearPregunta "4" h8 h9
+h3 = crearPregunta "3" h6 h7
+h2 = crearPregunta "2" h4 h5
+h1 = crearPregunta "1" h2 h3

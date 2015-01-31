@@ -1,3 +1,11 @@
+--------------------------------------------------------------------------------
+-- Haskinator.hs                                                              --
+--                                                                            --
+-- Autor:  Carlos Aponte 09-10041                                             --
+--         Donato Rolo   10-10640                                             --
+--------------------------------------------------------------------------------
+
+
 module Haskinator (main) where
 
 import Oraculo
@@ -9,9 +17,8 @@ import System.IO
 --                     FUNCIONES AUXILIARES AL CLIENTE                        --
 --------------------------------------------------------------------------------
 
--- Toma el oraculo viejo y una nueva pregunta y se la agrega al final en la 
--- afirmacion positiva 
--- original -> nva pregunta -> cadena -> Actualizado
+-- actualizarOraculo: Esta funcion toma el 'Oraculo' viejo y una nueva pregunta 
+--                    y se la agrega al final en la afirmacion positiva.
 
 actualizarOraculo:: (Oraculo a) -> (Oraculo a) -> [(String,Bool)] -> (Oraculo a)
 actualizarOraculo _  nuevaP [] = nuevaP
@@ -21,22 +28,26 @@ actualizarOraculo (Pregunta s p n)  nuevaP (x:xs)
 
 -------------------------------------------------------------------------------- 
  
--- Funcion que agrega una nueva pregunta con su respuesta a un oraculo.
--- original -> vieja 
-mejorarOraculo:: (Maybe (Oraculo a)) -> String -> [(String, Bool)] -> IO () 
+-- mejorarOraculo: Esta funcion que agrega una nueva pregunta con su respuesta a
+--                 un 'Oraculo'. 
+
+mejorarOraculo:: (Maybe (Oraculo a)) -> String -> [(String, Bool)] -> IO() 
 mejorarOraculo Nothing _ _= putStrLn "El Oraculo no ha sido iniciado."
 mejorarOraculo (Just (x)) vieja camino = do
   putStrLn "Por favor inquique la respuesta correcta: "
   resp <- getLine
-  putStrLn "Por favor indique una pregunta que la distinga de la prediccion hecha:"
+  putStrLn 
+  "Por favor indique una pregunta que la distinga de la prediccion hecha:"
   preg <- getLine
-  putStrLn "Muchas Gracias!" 
-  menu (Just(actualizarOraculo x (crearPregunta preg (crearPrediccion resp) (crearPrediccion vieja)) 
-                                 (camino)))  
+  putStrLn "Muchas Gracias!"
+  menu (Just(actualizarOraculo x (crearPregunta preg (crearPrediccion resp) 
+                                  (crearPrediccion vieja)) 
+                                  (camino)))  
   
 --------------------------------------------------------------------------------
 
--- calcularAncestroComun
+-- calcularAncestroComun: REDACTAR DESCRIPCION
+
 calcularAncestroComun:: Maybe (Oraculo a) -> String -> String -> IO ()
 calcularAncestroComun oraculo p1 p2 = do 
   let camino1 = obtenerCadena (fromJust(oraculo)) p1
@@ -45,21 +56,23 @@ calcularAncestroComun oraculo p1 p2 = do
   menu oraculo
   where
     crucial c1 c2 x
-      | c1 == Nothing = putStrLn "La primera prediccion indicada no esta en el Oraculo."
-      | c2 == Nothing = putStrLn "La segunda prediccion indicada no esta en el Oraculo."
+      | c1 == Nothing = putStrLn 
+                        "La primera prediccion indicada no esta en el Oraculo."
+      | c2 == Nothing = putStrLn 
+                        "La segunda prediccion indicada no esta en el Oraculo."
       | otherwise = do
         putStrLn "La pregunta crucial entre las predicciones es: "
         putStr "  --> " 
-        putStrLn $ fst $ head  [ x | x <- (fromJust c1) , not $ elem x (fromJust c2)]  
+        putStrLn $ fst $ head  [ x | x <- (fromJust c1) , not 
+                               $ elem x (fromJust c2)]  
  
 
 --------------------------------------------------------------------------------
 --                         FUNCIONES DEL CLIENTE                              --
 --------------------------------------------------------------------------------
 
-
--- Funcion Persistir (Guardar): se debe almacena la informacion del oraculo construido en el archivo
--- suministrado
+-- persistir: REDACTAR DESCRIPCIONse debe almacena la informacion del oraculo 
+--            construido en el archivo suministrado
 
 persistir:: Maybe(Oraculo a) -> IO ()
 persistir oraculo = do
@@ -73,8 +86,9 @@ persistir oraculo = do
 
 --------------------------------------------------------------------------------
 
--- Funcion Cargar: Si esta opcion es seleccionada, se debe pedir un nombre de archivo al usuario y luego
--- se debe cargarar la informacion al oraculo desde el archivo suministrado
+-- Funcion Cargar: Si esta opcion es seleccionada, se debe pedir un nombre de 
+-- archivo al usuario y luego se debe cargarar la informacion al oraculo desde 
+-- el archivo suministrado
 
 -- cargar:: IO ()
 -- cargar = do
@@ -86,7 +100,8 @@ persistir oraculo = do
 
 --------------------------------------------------------------------------------  
   
- --Estadisticas: 
+--Estadisticas: REDACTAR DESCRIPCION
+
 estadisticas:: Maybe(Oraculo a) -> IO ()
 estadisticas x = do
    putStrLn "Indique el nombre de la prediccion que desea buscar: "
@@ -95,7 +110,8 @@ estadisticas x = do
    menu x
    where
      imprimir (x,y,z) 
-       | x == 0  = putStrLn "La prediccion solicitada no se encuentra en el Oraculo"
+       | x == 0  = putStrLn 
+                   "La prediccion solicitada no se encuentra en el Oraculo"
        | otherwise = do
    putStr "\nCantidad Minima de Preguntas a Realizar: "
    print x
@@ -107,9 +123,10 @@ estadisticas x = do
 
 --------------------------------------------------------------------------------
 
--- Funcion Predecir: 
+-- Funcion Predecir: REDACTAR DESCRIPCION
 -- OraculoActual -> 
-predecir:: (Maybe(Oraculo a)) ->  (Maybe(Oraculo a)) ->  [(String,Bool)] -> IO ()
+
+predecir::(Maybe(Oraculo a)) ->  (Maybe(Oraculo a)) ->  [(String,Bool)] -> IO ()
 
 predecir Nothing _ _ = putStrLn "Error: El Oraculo esta vacio"
 
@@ -134,7 +151,8 @@ predecir e@(Just(Prediccion s)) x camino= do
   
 --------------------------------------------------------------------------------
 
---   Pregunta Crucial
+-- Pregunta Crucial: REDACTAR DESCRIPCION
+
 preguntaCrucial:: Maybe(Oraculo a) -> IO ()
 preguntaCrucial x = do
   putStrLn "Indique Primera Prediccion:"
@@ -143,23 +161,21 @@ preguntaCrucial x = do
   pred2 <- getLine
   calcularAncestroComun x pred1 pred2  
   menu x
-  
-  
---------------------------------------------------------------------------------  
-    
--- *********************** Funciones de Menu ***********************
 
 --------------------------------------------------------------------------------
 --                             FUNCION MENU                                   --
 --------------------------------------------------------------------------------
 
--- Funcion que valida una opcion del menu
+-- Funcion que valida una opcion del menu REDACTAR DESCRIPCION
+
 opcionValida :: Integer -> Bool
 opcionValida x = (1 <= x) && (x <= 6)
 
 --------------------------------------------------------------------------------
 
--- Funcion que muestra todas las opciones que tiene el usuario
+-- REDACTAR DESCRIPCION
+-- Funcion que muestra todas las opciones que tiene el usuario 
+
 printOpciones :: IO ()
 printOpciones = do
   putStrLn  "\n\t 1) Crear Nuevo Oraculo"
@@ -172,14 +188,17 @@ printOpciones = do
 
 --------------------------------------------------------------------------------
 
+-- REDACTAR DESCRIPCION
 -- Funcion  que da un mensaje de error del rango de opciones validas
+
 errorOpcion:: IO ()
 errorOpcion = putStrLn "\n Opcion Invalida. Solo enteros entre 1 y 6 \n"
  
 --------------------------------------------------------------------------------
 
-
+-- REDACTAR DESCRIPCION
 -- Ejecuta la opcion que fue pasada como parametro (dada por el usuario)
+
 ejecutar :: Integer -> (Maybe(Oraculo a)) -> IO ()
 ejecutar seleccion x
   | seleccion == 1 = menu Nothing
@@ -191,7 +210,9 @@ ejecutar seleccion x
 
 --------------------------------------------------------------------------------
 
+-- REDACTAR DESCRIPCION
 -- Funcion que presenta el menu de opciones y ejecuta la que diga el usuario  
+
 menu:: (Maybe(Oraculo a)) -> IO ()
 menu x = do
   printOpciones
@@ -201,43 +222,10 @@ menu x = do
        False -> errorOpcion
        
   menu x
-  
---------------------------------------------------------------------------------
---                             ORACULOS PRUEBA                                --
---------------------------------------------------------------------------------
-
-   
-pregunta1 = Pregunta "Es Ireal" pregunta2 pregunta3
-pregunta2 = Pregunta "Es Masculino" hoja1 hoja2
-pregunta3 = Pregunta "Es Buena Gente" hoja3 hoja4
- 
-hoja1 = Prediccion "MICKEY"
-hoja2 = Prediccion "MINNIE"
-hoja3 = Prediccion "CHAVEZ"
-hoja4 = Prediccion "OBAMA"
-
--- Oraculo de numeros, arbol del 1 al 15
-h15 = crearPrediccion "15"
-h14 = crearPrediccion "10"
-h13 = crearPrediccion "11"
-h12 = crearPrediccion "10"
-h10 = crearPrediccion "10"
-h9 = crearPrediccion "9"
-h8 = crearPrediccion "8"
-h5 = crearPrediccion "5"
-
-h11 = crearPregunta "11" h14 h15
-h7 = crearPregunta "7" h12 h13
-h6 = crearPregunta "6" h10 h11
-h4 = crearPregunta "4" h8 h9
-h3 = crearPregunta "3" h6 h7
-h2 = crearPregunta "2" h4 h5
-h1 = crearPregunta "1" h2 h3
-
 
 --------------------------------------------------------------------------------
 --                                   MAIN                                     --
 --------------------------------------------------------------------------------
 
 main = do
-  menu $ Just pregunta1
+  menu $ Nothing
