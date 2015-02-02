@@ -6,7 +6,7 @@
 --------------------------------------------------------------------------------
 
 
-module Haskinator (main) where
+module Main where
 
 import Oraculo
 import Data.Maybe
@@ -17,7 +17,9 @@ import System.IO
 --                     FUNCIONES AUXILIARES AL CLIENTE                        --
 --------------------------------------------------------------------------------
 
--- actualizarOraculo: Esta funcion toma el 'Oraculo' viejo y una nueva pregunta 
+-- actualizarOraculo: Esta funcion recibe como parametros dos Oraculos, uno representa el Oraculo
+-- 		del Haskinator y el otro una Pregunta que se desea agregar. Asi mismo, recibe una 
+-- 		list ade tuplas (String, Bool) oma el 'Oraculo' viejo y una nueva pregunta 
 --                    y se la agrega al final en la afirmacion positiva.
 
 actualizarOraculo:: (Oraculo a) -> (Oraculo a) -> [(String,Bool)] -> (Oraculo a)
@@ -28,8 +30,12 @@ actualizarOraculo (Pregunta s p n)  nuevaP (x:xs)
 
 -------------------------------------------------------------------------------- 
  
--- mejorarOraculo: Esta funcion que agrega una nueva pregunta con su respuesta a
---                 un 'Oraculo'. 
+-- mejorarOraculo: esta funcion recibe como parametros un 'Maybe Oraculo' que representa el Oraculo
+-- 		actual del Haskinator, la prediccion anterior enforma de String y una lista de (String,Bool) 
+-- 		que representa el camino hasta dicha prediccion.
+-- 		La funcion le solicita al usaurio la informacion para crear la pregunta que diferencia la
+-- 		prediccion vieja de la respuesta correcta, y seguidamente crear un Oraculo de tipo Prediccion.
+-- 		Finalmente llama ala funcion actualziar oraculo para agregar dicha pregunta al oraculo.
 
 mejorarOraculo:: (Maybe (Oraculo a)) -> String -> [(String, Bool)] -> IO() 
 mejorarOraculo Nothing _ _= putStrLn "El Oraculo no ha sido iniciado."
@@ -45,7 +51,12 @@ mejorarOraculo (Just (x)) vieja camino = do
   
 --------------------------------------------------------------------------------
 
--- calcularAncestroComun: REDACTAR DESCRIPCION
+-- calcularAncestroComun: esta funcion recibe un 'Maybe (Oraculo a)' y dos predicciones 
+-- 		en forma de Strings. La funcion procede a calcular el camino mas positivo a cada prediccion
+--		y a calcular el ancestro comun mas temprano de ambos camino; en caso de que alguna prediccion no 
+-- 		este en el Oraculo se le notifica al usuario y se pide nuevamente. Ya para finalizar
+-- 		la funcion imprime por pantalla el ancestro comun (que a su vez es la pregunta crucial que separa)
+-- 		esas dos predicciones.
 
 calcularAncestroComun:: Maybe (Oraculo a) -> String -> String -> IO ()
 calcularAncestroComun oraculo p1 p2 = do 
@@ -70,8 +81,8 @@ calcularAncestroComun oraculo p1 p2 = do
 --                         FUNCIONES DEL CLIENTE                              --
 --------------------------------------------------------------------------------
 
--- persistir: REDACTAR DESCRIPCIONse debe almacena la informacion del oraculo 
---            construido en el archivo suministrado
+-- persistir: esta funcion recibe como parametro un 'Maybe Oraculo' y procede a solicitarle al usuario
+-- el nombre de un archivo donde se guardará dicho oraculo.
 
 persistir:: Maybe(Oraculo a) -> IO ()
 persistir oraculo = do
@@ -85,9 +96,8 @@ persistir oraculo = do
 
 --------------------------------------------------------------------------------
 
--- Funcion Cargar: Si esta opcion es seleccionada, se debe pedir un nombre de 
--- archivo al usuario y luego se debe cargarar la informacion al oraculo desde 
--- el archivo suministrado
+-- Funcion Cargar: se pide al usuario un nombre de de archivo en donde se encuentra un Oraculo
+-- 		el cual se procede a leer y a cargar, volviendose el nuevo Oraculo del Haskinator
 
 cargar:: IO ()
 cargar = do
@@ -99,7 +109,11 @@ cargar = do
 
 --------------------------------------------------------------------------------  
   
---Estadisticas: REDACTAR DESCRIPCION
+--Estadisticas: esta funcion recibe como parametro un 'Maybe Oraculo' y le pide al usuario
+-- 		una cadena de caracteres correspondiente a una 'Prediccion'. Devuelve como 
+-- 		como resultado las estadisticas de minimo, maximo y promedio de preguntas
+-- 	    	necesarias para llegar a esa prediccion; en caso de que la prediccion no este
+-- `		contenida en el Oraculo, lo notifica y pide una nueva prediccion.
 
 estadisticas:: Maybe(Oraculo a) -> IO ()
 estadisticas x = do
@@ -122,8 +136,14 @@ estadisticas x = do
 
 --------------------------------------------------------------------------------
 
--- Funcion Predecir: REDACTAR DESCRIPCION
--- OraculoActual -> 
+-- Funcion Predecir: esta funcion recibe como parametros dos 'Maybe Oraculo', el primero 
+-- 		sirve para mantener el Oraculo Original, y el segundo para ir recorriendo 
+-- 		el arbol del Oraculo. Asi mismo recibe una lista de tuplas (String, Bool) 
+-- 		que representan el camino recorrido hasta la prediccion final. Por pantalla
+-- 		va consultando al usuario sobre como recorrer el Oraculo hasta que llega  a una
+-- 		prediccion, en ese momento si la prediccion fue correcta se regresa al menu, 
+-- 		en caso contrario se le pide al usuario la informacio necesaria para corregir
+-- 		y actualizar el Oraculo.
 
 predecir::(Maybe(Oraculo a)) ->  (Maybe(Oraculo a)) ->  [(String,Bool)] -> IO ()
 
@@ -150,7 +170,11 @@ predecir e@(Just(Prediccion s)) x camino= do
   
 --------------------------------------------------------------------------------
 
--- Pregunta Crucial: REDACTAR DESCRIPCION
+-- Pregunta Crucial: esta funcion recibe como parametros el 'Maybe Oraculo' con el que
+-- 		se esta trabajando actualmente y procede a consultarle al usuario a que prediccion desea 
+-- 		buscarles la pregunta crucial que las separa. Seguidamente procede a buscar el ancestro 
+-- 		comun de esas predicciones y notificarselo al usuario.
+
 
 preguntaCrucial:: Maybe(Oraculo a) -> IO ()
 preguntaCrucial x = do
@@ -162,18 +186,18 @@ preguntaCrucial x = do
   menu x
 
 --------------------------------------------------------------------------------
---                             FUNCION MENU                                   --
+--                             FUNCIONES MENU                                   --
 --------------------------------------------------------------------------------
 
--- Funcion que valida una opcion del menu REDACTAR DESCRIPCION
+-- opcionValida: esta funcion recibe un entero que representa la opcion seleccionada por el usuario
+-- y valida que sea manejable por el menu.
 
 opcionValida :: Integer -> Bool
 opcionValida x = (1 <= x) && (x <= 6)
 
 --------------------------------------------------------------------------------
 
--- REDACTAR DESCRIPCION
--- Funcion que muestra todas las opciones que tiene el usuario 
+-- printOpciones: funcion que imprime por pantalla las opciones disponibles en el menu del Haskinator.
 
 printOpciones :: IO ()
 printOpciones = do
@@ -187,16 +211,15 @@ printOpciones = do
 
 --------------------------------------------------------------------------------
 
--- REDACTAR DESCRIPCION
--- Funcion  que da un mensaje de error del rango de opciones validas
+-- errorOpcion: funcion que da un mensaje de error del rango de opciones validas
 
 errorOpcion:: IO ()
 errorOpcion = putStrLn "\n Opcion Invalida. Solo enteros entre 1 y 6 \n"
  
 --------------------------------------------------------------------------------
 
--- REDACTAR DESCRIPCION
--- Ejecuta la opcion que fue pasada como parametro (dada por el usuario)
+-- ejecutar: funcion que recibe un entero el cual representa una opcion valida del menu, y procede a
+-- 		ejecutarla.
 
 ejecutar :: Integer -> (Maybe(Oraculo a)) -> IO ()
 ejecutar seleccion x
@@ -209,8 +232,8 @@ ejecutar seleccion x
 
 --------------------------------------------------------------------------------
 
--- REDACTAR DESCRIPCION
--- Funcion que presenta el menu de opciones y ejecuta la que diga el usuario  
+-- menu: funcion que se encarga de mostrarle al usuario las opciones del Haskinator, verificar la validez
+-- 		y ejecutar las solicitudes del usuario.
 
 menu:: (Maybe(Oraculo a)) -> IO ()
 menu x = do
@@ -226,23 +249,6 @@ menu x = do
 --                                   MAIN                                     --
 --------------------------------------------------------------------------------
 
-main = do
-  menu $ Nothing
-  
-  
-h15 = crearPrediccion "15"
-h14 = crearPrediccion "10"
-h13 = crearPrediccion "13"
-h12 = crearPrediccion "10"
-h10 = crearPrediccion "10"
-h9 = crearPrediccion "9"
-h8 = crearPrediccion "10"
-h5 = crearPrediccion "5"
-
-h11 = crearPregunta "11" h14 h15
-h7 = crearPregunta "7" h12 h13
-h6 = crearPregunta "6" h10 h11
-h4 = crearPregunta "4" h8 h9
-h3 = crearPregunta "3" h6 h7
-h2 = crearPregunta "2" h4 h5
-h1 = crearPregunta "1" h2 h3
+-- main: funcion principal del programa y unica visible desde afuera del Haskinator. Esta funcion inicia
+-- 		llamando al menu con 'Maybe Oraculo' "vacio" representado por nothing.
+main = menu Nothing
