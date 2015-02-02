@@ -11,6 +11,7 @@ module Main where
 import Oraculo
 import Data.Maybe
 import System.IO
+import System.Directory(doesFileExist)
 
 
 --------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ actualizarOraculo (Pregunta s p n)  nuevaP (x:xs)
 mejorarOraculo:: (Maybe (Oraculo a)) -> String -> [(String, Bool)] -> IO() 
 mejorarOraculo Nothing _ _= putStrLn "El Oraculo no ha sido iniciado."
 mejorarOraculo (Just (x)) vieja camino = do
-  putStrLn "Por favor inquique la respuesta correcta: "
+  putStrLn "\nPor favor inquique la respuesta correcta: "
   resp <- getLine
   putStrLn "Por favor indique una pregunta que la distinga de la prediccion hecha:"
   preg <- getLine
@@ -86,6 +87,7 @@ calcularAncestroComun oraculo p1 p2 = do
 
 persistir:: Maybe(Oraculo a) -> IO ()
 persistir oraculo = do
+  putStr "\ESC[2J"
   putStrLn "Indique el archivo donde se guardará el Oráculo: "
   archivo <- getLine
   outh <- openFile archivo WriteMode
@@ -101,10 +103,17 @@ persistir oraculo = do
 
 cargar:: IO ()
 cargar = do
+  putStr "\ESC[2J"
   putStrLn "Indique el archivo desde donde se cargará el Oráculo: "
   archivo <- getLine
-  contenido <- readFile archivo
-  menu $ Just $ read contenido
+  exist <- doesFileExist archivo
+  if exist then do 
+	    contenido <- readFile archivo
+	    menu $ Just $ read contenido
+	    else do
+	      putStrLn "\nEl archivo indicado no existe, intentelo nuevamente...\n"
+	      cargar
+	    
 
 
 --------------------------------------------------------------------------------  
@@ -117,6 +126,7 @@ cargar = do
 
 estadisticas:: Maybe(Oraculo a) -> IO ()
 estadisticas x = do
+   putStr "\ESC[2J"
    putStrLn "Indique el nombre de la prediccion que desea buscar: "
    buscar <- getLine
    imprimir(obtenerEstadisticas (fromJust x) buscar)
@@ -178,6 +188,7 @@ predecir e@(Just(Prediccion s)) x camino= do
 
 preguntaCrucial:: Maybe(Oraculo a) -> IO ()
 preguntaCrucial x = do
+  putStr "\ESC[2J"
   putStrLn "Indique Primera Prediccion:"
   pred1 <- getLine
   putStrLn "Indique la Segunda Prediccion:"
@@ -237,6 +248,7 @@ ejecutar seleccion x
 
 menu:: (Maybe(Oraculo a)) -> IO ()
 menu x = do
+ 
   printOpciones
   seleccion <- readLn
   case opcionValida seleccion of
