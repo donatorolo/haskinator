@@ -29,71 +29,73 @@ import Data.List (sortBy)
 --                             TIPOS DE DATOS                                 --
 --------------------------------------------------------------------------------
 
--- Tipo Oraculo
---      Prediccion: 
+-- | Tipo Oraculo
+
+-- |     Prediccion: 
 --         Una cadena de caracteres con la predicción en cuestión.
---      Preguntas:
+
+-- |     Preguntas:
 --         Una cadena de caracteres con la pregunta en cuestión
 --         Un oráculo que corresponda a una respuesta positiva para la pregunta.
 --         Un oráculo que corresponda a una respuesta negativa para la pregunta.
 
-data Oraculo a = Prediccion String | Pregunta String (Oraculo a) (Oraculo a)
+data Oraculo = Prediccion String | Pregunta String Oraculo Oraculo
     deriving(Eq, Show, Read)
 
 --------------------------------------------------------------------------------
 --                       FUNCIONES DE CONSTRUCCIÓN                            --
 --------------------------------------------------------------------------------
 
--- crearPrediccion: Esta función recibe una cadena de caracteres, y devuelve un 
+-- | crearPrediccion: Esta función recibe una cadena de caracteres, y devuelve un 
 --                  'Oraculo' de tipo 'Prediccion'.
-crearPrediccion :: String -> Oraculo a
+crearPrediccion :: String -> Oraculo
 crearPrediccion = Prediccion
 
 --------------------------------------------------------------------------------
 
--- crearPregunta: Esta función recibe una cadena de caracteres y dos 'Oraculos'. 
+-- | crearPregunta: Esta función recibe una cadena de caracteres y dos 'Oraculos'. 
 --                Y devuelve un 'Oraculo' de tipo Pregunta con la cadena 
 --                suministrada como pregunta, el primer 'Oraculo' como respuesta 
 --                positiva y el segundo como negativa.
-crearPregunta:: String -> Oraculo a -> Oraculo a -> Oraculo a
+crearPregunta:: String -> Oraculo -> Oraculo -> Oraculo
 crearPregunta = Pregunta
 
 --------------------------------------------------------------------------------
 --                         FUNCIONES DE ACCESO                                --
 --------------------------------------------------------------------------------
 
--- prediccion: Esta función recibe un 'Oraculo' y devuelve la cadena de 
+-- | prediccion: Esta función recibe un 'Oraculo' y devuelve la cadena de 
 --             caracteres, siempre y cuando sea una 'Prediccion'.
-prediccion :: Oraculo a -> String
+prediccion :: Oraculo -> String
 prediccion (Prediccion a) = a
 prediccion _              = error 
                              "El elemento insertado no es del tipo 'Prediccion'"
 
 --------------------------------------------------------------------------------
 
--- pregunta:  Esta función recibe un 'Oraculo' y devuelve la cadena de 
+-- | pregunta:  Esta función recibe un 'Oraculo' y devuelve la cadena de 
 --            caracteres, siempre y cuando sea una 'Pregunta'.
-pregunta :: Oraculo a -> String
+pregunta :: Oraculo -> String
 pregunta (Pregunta a _ _) = a
 pregunta _                = error 
                                "El elemento insertado no es del tipo 'Pregunta'"
 
 --------------------------------------------------------------------------------
 
--- positivo:  Esta función recibe un 'Oraculo' y devuelve el 'Oraculo' que 
+-- | positivo:  Esta función recibe un 'Oraculo' y devuelve el 'Oraculo' que 
 --            corresponde a una respuesta postiva, siempre y cuando sea 
 --            una 'Pregunta'.
-positivo :: Oraculo a -> Oraculo a
+positivo :: Oraculo -> Oraculo
 positivo (Pregunta _ a _) = a
 positivo _                = error 
                                "El elemento insertado no es del tipo 'Pregunta'"
 
 --------------------------------------------------------------------------------
 
--- negativo:  Esta función recibe un 'Oraculo' y devuelve el 'Oraculo' que 
+-- | negativo:  Esta función recibe un 'Oraculo' y devuelve el 'Oraculo' que 
 --            corresponde a una respuesta negativa, siempre y cuando sea 
 --            una 'Pregunta'.
-negativo :: Oraculo a -> Oraculo a
+negativo :: Oraculo -> Oraculo
 negativo (Pregunta _ _ a) = a
 negativo _                = error 
                                "El elemento insertado no es del tipo 'Pregunta'"
@@ -102,7 +104,7 @@ negativo _                = error
 --                       FUNCIONES DE MODIFICACIÓN                            --
 --------------------------------------------------------------------------------
 
--- obtenerCadena: Esta función recibe un 'Oraculo' y una cadena de caracteres 
+-- | obtenerCadena: Esta función recibe un 'Oraculo' y una cadena de caracteres 
 --                correspondiente a una 'Prediccion'. Devuelve un valor de tipo 
 --                'Maybe'. Si la 'Prediccion' suministrada no pertenece al 
 --                'Oraculo', retorna 'Nothing'. De lo contrario retorna 
@@ -112,7 +114,7 @@ negativo _                = error
 --                la 'Prediccion' suministrada y el valor de verdad (decisión 
 --                positiva o negativa) de la misma.
 
-obtenerCadena :: Oraculo a -> String -> Maybe [(String, Bool)]
+obtenerCadena :: Oraculo -> String -> Maybe [(String, Bool)]
 obtenerCadena (Prediccion a) b 
     | a == b    = Just []
     | otherwise = Nothing
@@ -124,21 +126,23 @@ obtenerCadena (Pregunta a yes no) b = attach inYes $ if inYes then goYes
         goNo   = obtenerCadena no b
         attach r  Nothing  = Nothing
         attach r (Just xs) = Just $ (a, r) : xs
+-- se puede hacer con un case
+
 
 --------------------------------------------------------------------------------
 
--- obtenerEstadisticas: Esta función recibe un 'Oraculo' y devuelve una 3-tupla
+-- | obtenerEstadisticas: Esta función recibe un 'Oraculo' y devuelve una 3-tupla
 --                     con los siguientes datos: El mínimo, el máximo y 
 --                     promedio de preguntas que el Oráculo necesita hacer para
 --                     llegar a una predicción.
 
-obtenerEstadisticas :: Oraculo a -> String -> (Int,Int,Double)
+obtenerEstadisticas :: Oraculo -> String -> (Int,Int,Double)
 obtenerEstadisticas a b  
   | l == [] = (0,0,0) 
   | otherwise = (minimum l, maximum l,average l)
     where
         l = getList a b [] 0
-        getList :: Oraculo a -> String -> [Int] -> Int -> [Int]
+        getList :: Oraculo -> String -> [Int] -> Int -> [Int]
         getList (Prediccion a) b list counter
                 | a == b    = counter:list
                 |otherwise  = list
@@ -147,6 +151,6 @@ obtenerEstadisticas a b
                 goYes = getList yes b list (counter+1)
                 goNo  = getList no b list (counter+1)
         average :: [Int] -> Double
-        average l = (sum $ map fromIntegral l) / (fromIntegral $ length l)
+        average l = (fromIntegral $ sum l) / (fromIntegral $ length l)
 
 --------------------------------------------------------------------------------
