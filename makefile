@@ -15,14 +15,18 @@
 # DELMAIN -> archivo ejecutable a borrar
 
 CC = ghc
+HD = haddock
 CFLAGS= -o
+HDFLAGS= -o . -h 
 HS_PROG = Haskinator.hs
 OUTPUT = Haskinator
 DELCOM = rm 
-DELFILES = *.o *.hi *~
-DELMAIN = Haskinator
+DELFILES = *.o *.hi *~ 
+DELMAIN = Haskinator *.html *.png *.jpg *.css *.gif *~  *.js
+
 make:
 	$(CC) $(CFLAGS) $(OUTPUT) $(HS_PROG)
+	$(HD)  $(HDFLAGS) $(HS_PROG)
 	$(DELCOM) $(DELFILES)
 
 .PHONY: clean

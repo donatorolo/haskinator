@@ -38,9 +38,52 @@ import Data.List (sortBy)
 --         Una cadena de caracteres con la pregunta en cuestión
 --         Un oráculo que corresponda a una respuesta positiva para la pregunta.
 --         Un oráculo que corresponda a una respuesta negativa para la pregunta.
+h15 = crearPrediccion "15"
+h14 = crearPrediccion "10"
+h13 = crearPrediccion "13"
+h12 = crearPrediccion "10"
+h10 = crearPrediccion "10"
+h9 = crearPrediccion "9"
+h8 = crearPrediccion "10"
+h5 = crearPrediccion "5"
+
+h11 = crearPregunta "11" h14 h15
+h7 = crearPregunta "7" h12 h13
+h6 = crearPregunta "6" h10 h11
+h4 = crearPregunta "4" h8 h9
+h3 = crearPregunta "3" h6 h7
+h2 = crearPregunta "2" h4 h5
+h1 = crearPregunta "1" h2 h3
+
 
 data Oraculo = Prediccion String | Pregunta String Oraculo Oraculo
-    deriving(Eq, Show, Read)
+    deriving(Eq)
+    
+instance Show (Oraculo) where
+    show a = help a 0
+        where
+            help (Prediccion a) n      = replicate (n*2) ' ' ++ "Prediccion " ++ 
+                                         "\"" ++ a ++ "\"" ++ "\n"
+            help (Pregunta a yes no) n = replicate (n*2) ' ' ++ "Pregunta " ++
+                                         "\"" ++ a ++ "\""  ++ "\n" ++ help yes (n+1) ++ 
+                                         help no (n+1)
+                                         
+instance Read Oraculo where
+  readsPrec _ r = readsOraculo r
+  
+readsOraculo :: ReadS Oraculo
+
+readsOraculo ('P':'r':'e':'d':'i':'c':'c':'i':'o':'n':' ':s) =
+    [(Prediccion x, t) | (x,t) <- reads s ] 
+    
+readsOraculo ('P':'r':'e':'g':'u':'n':'t':'a':' ':s) = 					
+    [ (Pregunta preg oraculo1 oraculo2 , resto) |  
+				(preg, '\n':t) <- reads s,
+				(oraculo1, '\n':u) <- readsOraculo t,
+                                (oraculo2, resto) <- readsOraculo u       ]
+
+readsOraculo (' ':resto) = readsOraculo resto
+readsOraculo _ = []
 
 --------------------------------------------------------------------------------
 --                       FUNCIONES DE CONSTRUCCIÓN                            --

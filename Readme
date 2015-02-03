@@ -15,6 +15,12 @@ Proyecto: Haskinator
 	      interrelacionan entre si.
 
 ------------------------------------
+	Documentacion:
+------------------------------------
+
+	Para generar la documentacion del proyecto basta con ejecutar el comando haddock:
+		haddock -o . -h Haskinator.hs	
+------------------------------------
 	    Modulos: 
 ------------------------------------
 
