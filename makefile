@@ -30,8 +30,10 @@ DELMAIN = Haskinator *.html *.png *.jpg *.css *.gif *~  *.js
 
 make:
 	$(CC) $(CFLAGS) $(OUTPUT) $(HS_PROG)
-	$(HD)  $(HDFLAGS) $(HS_PROG)
 	$(DELCOM) $(DELFILES)
+
+doc:
+	$(HD)  $(HDFLAGS) $(HS_PROG)
 
 .PHONY: clean
 clean:

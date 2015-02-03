@@ -20,9 +20,8 @@ implementaron, su accionar, y como se interrelacionan entre sí.
 ------------------------------------
 
     Para generar la documentacion del proyecto basta con ejecutar el comando 
-haddock:
-
-        haddock -o . -h Haskinator.hs   
+    "make doc" el cual usara haddock para producir la documentacion enformato html.
+        
 
 ------------------------------------
     Módulos: 
@@ -99,6 +98,9 @@ Haskinator.hs -> contiene la definición de un cliente del 'Oraculo' llamado
             Si se desea eliminar el Haskinator se puede ejecutar el comendo 
             "make clean" el cual sólo dejará los arhivos fuente, eliminando todo
             lo anteriormente generado por el make.
+            
+            Si se desea obtener la documentacion producida por haddock se puede 
+            ejecutar el comando "make doc" 
      
      Uso ->  Para usar el Haskinator basta con ejecutar el archivo antes 
             mencionado y seguir las instrucciones del menú de acuerdo a nuestro
