@@ -29,10 +29,10 @@ DELFILES = *.o *.hi *~
 DELMAIN = Haskinator *.html *.png *.jpg *.css *.gif *~  *.js
 
 make:
-    $(CC) $(CFLAGS) $(OUTPUT) $(HS_PROG)
-    $(HD)  $(HDFLAGS) $(HS_PROG)
-    $(DELCOM) $(DELFILES)
+	$(CC) $(CFLAGS) $(OUTPUT) $(HS_PROG)
+	$(HD)  $(HDFLAGS) $(HS_PROG)
+	$(DELCOM) $(DELFILES)
 
 .PHONY: clean
 clean:
-    $(DELCOM) $(DELMAIN)
+	$(DELCOM) $(DELMAIN)

@@ -45,9 +45,9 @@ mejorarOraculo (Just (x)) vieja camino = do
   putStrLn "\nPor favor inquique la respuesta correcta: "
   resp <- getLine
   putStrLn 
-        "Por favor indique una pregunta que la distinga de la prediccion hecha:"
+        "\nPor favor indique una pregunta que la distinga de la prediccion hecha:"
   preg <- getLine
-  putStrLn "Muchas Gracias!"
+  putStrLn "\nMuchas Gracias!"
   menu (Just(actualizarOraculo x (crearPregunta preg (crearPrediccion resp) 
                                   (crearPrediccion vieja)) 
                                   (camino)))  
@@ -70,11 +70,11 @@ calcularAncestroComun oraculo p1 p2 = do
   where
     crucial c1 c2 x
       | c1 == Nothing = putStrLn 
-                        "La primera prediccion indicada no esta en el Oraculo."
+                        "\n ---> La primera prediccion indicada no esta en el Oraculo."
       | c2 == Nothing = putStrLn 
-                        "La segunda prediccion indicada no esta en el Oraculo."
+                        "\n ---> La segunda prediccion indicada no esta en el Oraculo."
       | otherwise = do
-        putStrLn "La pregunta crucial entre las predicciones es: "
+        putStrLn "\nLa pregunta crucial entre las predicciones es: "
         putStr "  --> " 
         putStrLn $ fst $ head  [ x | x <- (fromJust c1) , not 
                                $ elem x (fromJust c2)]  
@@ -87,6 +87,10 @@ calcularAncestroComun oraculo p1 p2 = do
 --      a solicitarle al usuario el nombre de un archivo donde se guardará dicho 
 ---     'Oraculo'.
 persistir:: Maybe Oraculo -> IO ()
+persistir Nothing = do
+  putStrLn "\nError: El Oraculo esta vacio, no hay nada que guardar."
+  menu Nothing
+  
 persistir oraculo = do
   putStr "\ESC[2J"
   putStrLn "Indique el archivo donde se guardará el Oráculo: "
@@ -124,6 +128,10 @@ cargar = do
 --      caso de que la 'Prediccion' no este contenida en el 'Oraculo', lo 
 --      notifica y pide una nueva 'Prediccion'.
 estadisticas:: Maybe Oraculo -> IO ()
+estadisticas Nothing = do
+  putStrLn "\nError: El Oraculo esta vacio."
+  menu Nothing
+  
 estadisticas x = do
    putStr "\ESC[2J"
    putStrLn "Indique el nombre de la prediccion que desea buscar: "
@@ -156,7 +164,7 @@ estadisticas x = do
 --      'Oraculo'.
 predecir::Maybe Oraculo ->  Maybe Oraculo ->  [(String,Bool)] -> IO ()
 
-predecir Nothing _ _ = putStrLn "Error: El Oraculo esta vacio"
+predecir Nothing _ _ = putStrLn "\nError: El Oraculo esta vacio."
 
 predecir e@(Just(Pregunta s p n)) x camino= do
     putStrLn s
@@ -174,7 +182,7 @@ predecir e@(Just(Prediccion s)) x camino= do
   respuesta <- getLine
   case respuesta of
    "si" -> putStrLn "Muchas Gracias"
-   "no" -> mejorarOraculo x s camino
+   "no" -> mejorarOraculo x s (reverse camino)
    _    -> putStrLn "La respuesta debe ser si o no"
   
 --------------------------------------------------------------------------------
@@ -185,13 +193,20 @@ predecir e@(Just(Prediccion s)) x camino= do
 --      Seguidamente procede a buscar el ancestro común de esas 'Predicciones' y 
 --      notificárselo al usuario.
 preguntaCrucial:: Maybe Oraculo -> IO ()
+preguntaCrucial Nothing = do
+  putStrLn "\nError: El Oraculo esta vacio."
+  menu Nothing
+  
 preguntaCrucial x = do
-  putStr "\ESC[2J"
+  putStr "\n\n\n"
   putStrLn "Indique Primera Prediccion:"
   pred1 <- getLine
   putStrLn "Indique la Segunda Prediccion:"
   pred2 <- getLine
-  calcularAncestroComun x pred1 pred2  
+  if (pred1 /= pred2) then calcularAncestroComun x pred1 pred2  
+		      else do
+			putStrLn "\n -->Error: Ambas predicciones son iguales. Intentelo Nuevamente"
+			preguntaCrucial x
   menu x
 
 --------------------------------------------------------------------------------
@@ -246,10 +261,8 @@ menu x = do
  
   printOpciones
   seleccion <- readLn
-  case opcionValida seleccion of
-       True -> ejecutar seleccion x
-       False -> errorOpcion
-       
+  if opcionValida seleccion then ejecutar seleccion x
+			    else errorOpcion       
   menu x
 
 --------------------------------------------------------------------------------
@@ -258,7 +271,7 @@ menu x = do
 
 -- | main: Esta es la función principal del programa y única visible desde 
 --      afuera del Haskinator. Esta función inicia llamando al main con 
---      'Maybe Oraculo' "vacio" representado por 'Nothing'.
+--      'Maybe Oraculo' "vacio." representado por 'Nothing'.
 main = menu Nothing
 
 --------------------------------------------------------------------------------

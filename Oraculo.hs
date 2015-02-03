@@ -134,8 +134,6 @@ obtenerCadena (Pregunta a yes no) b = attach inYes $ if inYes then goYes
         goNo   = obtenerCadena no b
         attach r  Nothing  = Nothing
         attach r (Just xs) = Just $ (a, r) : xs
--- se puede hacer con un case
-
 
 --------------------------------------------------------------------------------
 
