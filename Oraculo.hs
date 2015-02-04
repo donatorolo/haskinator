@@ -38,68 +38,34 @@ import Data.List (sortBy)
 --         Una cadena de caracteres con la pregunta en cuestión
 --         Un oráculo que corresponda a una respuesta positiva para la pregunta.
 --         Un oráculo que corresponda a una respuesta negativa para la pregunta.
-h15 = crearPrediccion "15"
-h14 = crearPrediccion "10"
-h13 = crearPrediccion "13"
-h12 = crearPrediccion "10"
-h10 = crearPrediccion "10"
-h9 = crearPrediccion "9"
-h8 = crearPrediccion "10"
-h5 = crearPrediccion "5"
-
-h11 = crearPregunta "11" h14 h15
-h7 = crearPregunta "7" h12 h13
-h6 = crearPregunta "6" h10 h11
-h4 = crearPregunta "4" h8 h9
-h3 = crearPregunta "3" h6 h7
-h2 = crearPregunta "2" h4 h5
-h1 = crearPregunta "1" h2 h3
-
-
 data Oraculo = Prediccion String | Pregunta String Oraculo Oraculo
-    deriving(Eq)
+    deriving(Eq, Show, Read)
     
-instance Show (Oraculo) where
-    show a = help a 0
-        where
-            help (Prediccion a) n      = replicate (n*2) ' ' ++ "Prediccion " ++ 
-                                         "\"" ++ a ++ "\"" ++ "\n"
-            help (Pregunta a yes no) n = replicate (n*2) ' ' ++ "Pregunta " ++
-                                         "\"" ++ a ++ "\""  ++ "\n" ++ help yes (n+1) ++ 
-                                         help no (n+1)
+--instance Show (Oraculo) where
+--    show a = help a 0
+--        where
+--            help (Prediccion a) n      = replicate (n*2) ' ' ++ 
+--                                         "Prediccion " ++ "\"" ++ a ++ "\"" ++ 
+--                                         "\n"
+--            help (Pregunta a yes no) n = replicate (n*2) ' ' ++ "Pregunta " ++
+--                                         "\"" ++ a ++ "\""  ++ "\n" ++ 
+--                                         help yes (n+1) ++ help no (n+1)
                                          
-instance Read Oraculo where
-  readsPrec _ r = readsOraculo r
-  
-readsOraculo :: ReadS Oraculo
-
-readsOraculo ('P':'r':'e':'d':'i':'c':'c':'i':'o':'n':' ':s) =
-    [(Prediccion x, t) | (x,t) <- reads s ] 
-    
-readsOraculo ('P':'r':'e':'g':'u':'n':'t':'a':' ':s) = 					
-    [ (Pregunta preg oraculo1 oraculo2 , resto) |  
-				(preg, '\n':t) <- reads s,
-				(oraculo1, '\n':u) <- readsOraculo t,
-                                (oraculo2, resto) <- readsOraculo u       ]
-
-readsOraculo (' ':resto) = readsOraculo resto
-readsOraculo _ = []
-
 --------------------------------------------------------------------------------
 --                       FUNCIONES DE CONSTRUCCIÓN                            --
 --------------------------------------------------------------------------------
 
--- | crearPrediccion: Esta función recibe una cadena de caracteres, y devuelve un 
---                  'Oraculo' de tipo 'Prediccion'.
+-- | crearPrediccion: Esta función recibe una cadena de caracteres, y devuelve 
+--                  un 'Oraculo' de tipo 'Prediccion'.
 crearPrediccion :: String -> Oraculo
 crearPrediccion = Prediccion
 
 --------------------------------------------------------------------------------
 
--- | crearPregunta: Esta función recibe una cadena de caracteres y dos 'Oraculos'. 
---                Y devuelve un 'Oraculo' de tipo Pregunta con la cadena 
---                suministrada como pregunta, el primer 'Oraculo' como respuesta 
---                positiva y el segundo como negativa.
+-- | crearPregunta: Esta función recibe una cadena de caracteres y dos 
+--                'Oraculos'. Y devuelve un 'Oraculo' de tipo Pregunta con la 
+--                cadena suministrada como pregunta, el primer 'Oraculo' como 
+--                respuesta positiva y el segundo como negativa.
 crearPregunta:: String -> Oraculo -> Oraculo -> Oraculo
 crearPregunta = Pregunta
 
@@ -156,7 +122,6 @@ negativo _                = error
 --                deben hacerse a partir de la raíz del 'Oraculo', para alcanzar
 --                la 'Prediccion' suministrada y el valor de verdad (decisión 
 --                positiva o negativa) de la misma.
-
 obtenerCadena :: Oraculo -> String -> Maybe [(String, Bool)]
 obtenerCadena (Prediccion a) b 
     | a == b    = Just []
@@ -174,11 +139,10 @@ obtenerCadena (Pregunta a yes no) b = attach inYes $ if inYes then goYes
 
 --------------------------------------------------------------------------------
 
--- | obtenerEstadisticas: Esta función recibe un 'Oraculo' y devuelve una 3-tupla
---                     con los siguientes datos: El mínimo, el máximo y 
+-- | obtenerEstadisticas: Esta función recibe un 'Oraculo' y devuelve una 
+--                     3-tupla con los siguientes datos: El mínimo, el máximo y 
 --                     promedio de preguntas que el Oráculo necesita hacer para
 --                     llegar a una predicción.
-
 obtenerEstadisticas :: Oraculo -> String -> (Int,Int,Double)
 obtenerEstadisticas a b  
   | l == [] = (0,0,0) 

@@ -18,11 +18,11 @@ import System.Directory(doesFileExist)
 --                     FUNCIONES AUXILIARES AL CLIENTE                        --
 --------------------------------------------------------------------------------
 
--- | actualizarOraculo: Esta funcion recibe como parametros dos Oraculos, uno representa el Oraculo
--- 		del Haskinator y el otro una Pregunta que se desea agregar. Asi mismo, recibe una 
--- 		list ade tuplas (String, Bool) oma el 'Oraculo' viejo y una nueva pregunta 
---                    y se la agrega al final en la afirmacion positiva.
-
+-- | actualizarOraculo: Esta funcion recibe como parametros dos 'Oraculos', uno 
+--    representa el 'Oraculo' del Haskinator y el otro una Pregunta que se desea 
+--    agregar. Así mismo, recibe una lista de tuplas (String, Bool) toma el 
+--    'Oraculo' viejo y una nueva pregunta y se la agrega al final en la 
+--    afirmación positiva.
 actualizarOraculo:: (Oraculo) -> (Oraculo) -> [(String,Bool)] -> (Oraculo)
 actualizarOraculo _  nuevaP [] = nuevaP
 actualizarOraculo (Pregunta s p n)  nuevaP (x:xs) 
@@ -31,19 +31,21 @@ actualizarOraculo (Pregunta s p n)  nuevaP (x:xs)
 
 -------------------------------------------------------------------------------- 
  
--- | mejorarOraculo: esta funcion recibe como parametros un 'Maybe Oraculo' que representa el Oraculo
--- 		actual del Haskinator, la prediccion anterior enforma de String y una lista de (String,Bool) 
--- 		que representa el camino hasta dicha prediccion.
--- 		La funcion le solicita al usaurio la informacion para crear la pregunta que diferencia la
--- 		prediccion vieja de la respuesta correcta, y seguidamente crear un Oraculo de tipo Prediccion.
--- 		Finalmente llama ala funcion actualziar oraculo para agregar dicha pregunta al oraculo.
-
+-- | mejorarOraculo: Esta función recibe como parametros un 'Maybe Oraculo' que 
+--    representa el 'Oraculo' actual del Haskinator, la predicción anterior 
+--    en forma de String y una lista de (String,Bool) que representa el camino 
+--    hasta dicha predicción. La función le solicita al usuario la información 
+--    para crear la pregunta que diferencia la predicción vieja de la respuesta 
+--    correcta, y seguidamente crear un 'Oraculo' de tipo Prediccion. Finalmente 
+--    llama a la función actualizar 'Oraculo' para agregar dicha pregunta al 
+--    'Oraculo'.
 mejorarOraculo:: (Maybe (Oraculo)) -> String -> [(String, Bool)] -> IO() 
 mejorarOraculo Nothing _ _= putStrLn "El Oraculo no ha sido iniciado."
 mejorarOraculo (Just (x)) vieja camino = do
   putStrLn "\nPor favor inquique la respuesta correcta: "
   resp <- getLine
-  putStrLn "Por favor indique una pregunta que la distinga de la prediccion hecha:"
+  putStrLn 
+        "Por favor indique una pregunta que la distinga de la prediccion hecha:"
   preg <- getLine
   putStrLn "Muchas Gracias!"
   menu (Just(actualizarOraculo x (crearPregunta preg (crearPrediccion resp) 
@@ -52,13 +54,13 @@ mejorarOraculo (Just (x)) vieja camino = do
   
 --------------------------------------------------------------------------------
 
--- | calcularAncestroComun: esta funcion recibe un 'Maybe (Oraculo)' y dos predicciones 
--- 		en forma de Strings. La funcion procede a calcular el camino mas positivo a cada prediccion
---		y a calcular el ancestro comun mas temprano de ambos camino; en caso de que alguna prediccion no 
--- 		este en el Oraculo se le notifica al usuario y se pide nuevamente. Ya para finalizar
--- 		la funcion imprime por pantalla el ancestro comun (que a su vez es la pregunta crucial que separa)
--- 		esas dos predicciones.
-
+-- | calcularAncestroComun: Esta función recibe un 'Maybe (Oraculo)' y dos 
+--      predicciones en forma de Strings. La función procede a calcular el 
+--      camino más positivo a cada 'Prediccion' y a calcular el ancestro común 
+--      más temprano de ambos camino; en caso de que alguna 'Predicción' no este 
+--      en el 'Oraculo' se le notifica al usuario y se pide nuevamente. Ya para 
+--      finalizar la función imprime por pantalla el ancestro común (que a su 
+--      vez es la pregunta crucial que separa) esas dos predicciones.
 calcularAncestroComun:: Maybe (Oraculo) -> String -> String -> IO ()
 calcularAncestroComun oraculo p1 p2 = do 
   let camino1 = obtenerCadena (fromJust(oraculo)) p1
@@ -77,14 +79,13 @@ calcularAncestroComun oraculo p1 p2 = do
         putStrLn $ fst $ head  [ x | x <- (fromJust c1) , not 
                                $ elem x (fromJust c2)]  
  
-
 --------------------------------------------------------------------------------
 --                         FUNCIONES DEL CLIENTE                              --
 --------------------------------------------------------------------------------
 
--- | persistir: esta funcion recibe como parametro un 'Maybe Oraculo' y procede a solicitarle al usuario
--- el nombre de un archivo donde se guardará dicho oraculo.
-
+-- | persistir: Esta función recibe como parametro un 'Maybe Oraculo' y procede 
+--      a solicitarle al usuario el nombre de un archivo donde se guardará dicho 
+---     'Oraculo'.
 persistir:: Maybe Oraculo -> IO ()
 persistir oraculo = do
   putStr "\ESC[2J"
@@ -98,9 +99,9 @@ persistir oraculo = do
 
 --------------------------------------------------------------------------------
 
--- | Funcion Cargar: se pide al usuario un nombre de de archivo en donde se encuentra un Oraculo
--- 		el cual se procede a leer y a cargar, volviendose el nuevo Oraculo del Haskinator
-
+-- | cargar: Esta función pide al usuario un nombre de archivo en donde se 
+--      encuentra un 'Oraculo' el cual se procede a leer y a cargar, volviéndose
+--      el nuevo 'Oraculo' del Haskinator.
 cargar:: IO ()
 cargar = do
   putStr "\ESC[2J"
@@ -108,22 +109,20 @@ cargar = do
   archivo <- getLine
   exist <- doesFileExist archivo
   if exist then do 
-	    contenido <- readFile archivo
-	    menu $ Just $ read contenido
-	    else do
-	      putStrLn "\nEl archivo indicado no existe, intentelo nuevamente...\n"
-	      cargar
-	    
-
+        contenido <- readFile archivo
+        menu $ Just $ read contenido
+        else do
+          putStrLn "\nEl archivo indicado no existe, intentelo nuevamente...\n"
+          cargar
 
 --------------------------------------------------------------------------------  
   
--- | Estadisticas: esta funcion recibe como parametro un 'Maybe Oraculo' y le pide al usuario
--- 		una cadena de caracteres correspondiente a una 'Prediccion'. Devuelve como 
--- 		como resultado las estadisticas de minimo, maximo y promedio de preguntas
--- 	    	necesarias para llegar a esa prediccion; en caso de que la prediccion no este
--- `		contenida en el Oraculo, lo notifica y pide una nueva prediccion.
-
+-- | estadisticas: Esta función recibe como parámetro un 'Maybe Oraculo' y le 
+--      pide al usuario una cadena de caracteres correspondiente a una 
+--      'Prediccion'. Devuelve como resultado las estadísticas de mínimo, máximo
+--      y promedio de preguntas necesarias para llegar a esa 'Prediccion'; en 
+--      caso de que la 'Prediccion' no este contenida en el 'Oraculo', lo 
+--      notifica y pide una nueva 'Prediccion'.
 estadisticas:: Maybe Oraculo -> IO ()
 estadisticas x = do
    putStr "\ESC[2J"
@@ -136,25 +135,25 @@ estadisticas x = do
        | x == 0  = putStrLn 
                    "La prediccion solicitada no se encuentra en el Oraculo"
        | otherwise = do
-	 putStr "\nCantidad Minima de Preguntas a Realizar: "
-	 print x
-	 putStr "Cantidad Maxima de Preguntas a Realizar:  "
-	 print y
-	 putStr "Cantidad Promedio de Preguntas a Realizar: "
-	 print z
-	 putStr "\n"
+     putStr "\nCantidad Minima de Preguntas a Realizar: "
+     print x
+     putStr "Cantidad Maxima de Preguntas a Realizar:  "
+     print y
+     putStr "Cantidad Promedio de Preguntas a Realizar: "
+     print z
+     putStr "\n"
 
 --------------------------------------------------------------------------------
 
--- | Funcion Predecir: esta funcion recibe como parametros dos 'Maybe Oraculo', el primero 
--- 		sirve para mantener el Oraculo Original, y el segundo para ir recorriendo 
--- 		el arbol del Oraculo. Asi mismo recibe una lista de tuplas (String, Bool) 
--- 		que representan el camino recorrido hasta la prediccion final. Por pantalla
--- 		va consultando al usuario sobre como recorrer el Oraculo hasta que llega  a una
--- 		prediccion, en ese momento si la prediccion fue correcta se regresa al menu, 
--- 		en caso contrario se le pide al usuario la informacio necesaria para corregir
--- 		y actualizar el Oraculo.
-
+-- | predecir: Esta función recibe como parámetros dos 'Maybe Oraculo', el 
+--      primero sirve para mantener el 'Oraculo' original, y el segundo para ir 
+--      recorriendo el árbol del 'Oraculo'. Así mismo recibe una lista de tuplas
+--      (String, Bool) que representan el camino recorrido hasta la 'Prediccion'
+--      final. Por pantalla va consultando al usuario sobre como recorrer el 
+--      'Oraculo' hasta que llega a una 'Prediccion', en ese momento si la 
+--      'Prediccion' fue correcta se regresa al menú, en caso contrario se le 
+--      pide al usuario la información necesaria para corregir y actualizar el 
+--      'Oraculo'.
 predecir::Maybe Oraculo ->  Maybe Oraculo ->  [(String,Bool)] -> IO ()
 
 predecir Nothing _ _ = putStrLn "Error: El Oraculo esta vacio"
@@ -168,7 +167,7 @@ predecir e@(Just(Pregunta s p n)) x camino= do
       _    -> do 
         putStrLn "La respuesta debe ser si o no"
         predecir e x camino
-   
+
 predecir e@(Just(Prediccion s)) x camino= do
   putStrLn s
   putStrLn "¿Es esta prediccion acertada? (si/no):"
@@ -180,12 +179,11 @@ predecir e@(Just(Prediccion s)) x camino= do
   
 --------------------------------------------------------------------------------
 
--- | Pregunta Crucial: esta funcion recibe como parametros el 'Maybe Oraculo' con el que
--- 		se esta trabajando actualmente y procede a consultarle al usuario a que prediccion desea 
--- 		buscarles la pregunta crucial que las separa. Seguidamente procede a buscar el ancestro 
--- 		comun de esas predicciones y notificarselo al usuario.
-
-
+-- | preguntaCrucial: Esta función recibe como parámetros el 'Maybe Oraculo' con
+--      el que se esta trabajando actualmente y procede a consultarle al usuario
+--      a que 'Prediccion' desea buscarles la pregunta crucial que las separa.
+--      Seguidamente procede a buscar el ancestro común de esas 'Predicciones' y 
+--      notificárselo al usuario.
 preguntaCrucial:: Maybe Oraculo -> IO ()
 preguntaCrucial x = do
   putStr "\ESC[2J"
@@ -197,19 +195,18 @@ preguntaCrucial x = do
   menu x
 
 --------------------------------------------------------------------------------
---                             FUNCIONES MENU                                   --
+--                             FUNCIONES MENÚ                                 --
 --------------------------------------------------------------------------------
 
--- | opcionValida: esta funcion recibe un entero que representa la opcion seleccionada por el usuario
--- y valida que sea manejable por el menu.
-
+-- | opcionValida: Esta función recibe un entero que representa la opción 
+--      seleccionada por el usuario y valida que sea manejable por el menú.
 opcionValida :: Integer -> Bool
 opcionValida x = (1 <= x) && (x <= 6)
 
 --------------------------------------------------------------------------------
 
--- | printOpciones: funcion que imprime por pantalla las opciones disponibles en el menu del Haskinator.
-
+-- | printOpciones: Esta funcion imprime por pantalla las opciones disponibles 
+--      en el menú del Haskinator.
 printOpciones :: IO ()
 printOpciones = do
   putStrLn  "\n\t 1) Crear Nuevo Oraculo"
@@ -222,16 +219,15 @@ printOpciones = do
 
 --------------------------------------------------------------------------------
 
--- | errorOpcion: funcion que da un mensaje de error del rango de opciones validas
-
+-- | errorOpcion: Esta función que da un mensaje de error del rango de opciones 
+--       válidas
 errorOpcion:: IO ()
 errorOpcion = putStrLn "\n Opcion Invalida. Solo enteros entre 1 y 6 \n"
  
 --------------------------------------------------------------------------------
 
--- | ejecutar: funcion que recibe un entero el cual representa una opcion valida del menu, y procede a
--- 		ejecutarla.
-
+-- | ejecutar: Esta función que recibe un entero el cual representa una opción
+--       válida del menú, y procede a ejecutarla.
 ejecutar :: Integer -> Maybe Oraculo -> IO ()
 ejecutar seleccion x
   | seleccion == 1 = menu Nothing
@@ -243,9 +239,8 @@ ejecutar seleccion x
 
 --------------------------------------------------------------------------------
 
--- | menu: funcion que se encarga de mostrarle al usuario las opciones del Haskinator, verificar la validez
--- 		y ejecutar las solicitudes del usuario.
-
+-- | menu: Esta función que se encarga de mostrarle al usuario las opciones del 
+--      Haskinator, verificar la validez y ejecuta las solicitudes del usuario.
 menu:: Maybe Oraculo -> IO ()
 menu x = do
  
@@ -261,6 +256,9 @@ menu x = do
 --                                   MAIN                                     --
 --------------------------------------------------------------------------------
 
--- | main: funcion principal del programa y unica visible desde afuera del Haskinator. Esta funcion inicia
--- 		llamando al menu con 'Maybe Oraculo' "vacio" representado por nothing.
+-- | main: Esta es la función principal del programa y única visible desde 
+--      afuera del Haskinator. Esta función inicia llamando al main con 
+--      'Maybe Oraculo' "vacio" representado por 'Nothing'.
 main = menu Nothing
+
+--------------------------------------------------------------------------------
